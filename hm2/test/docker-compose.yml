@@ -1,0 +1,38 @@
+# docker-compose.yaml
+version: '0'
+services:
+  database:
+    image: "postgres"
+    restart: always
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts downvolumes:
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+      
+  api:
+    build: ./api
+    restart: always
+    expose:
+      - 80
+    ports:
+      - 80:80
+    volumes:
+      - ./api:/usr/src/app/
+    links:
+      - database
+    environment:
+      PGHOST: "localhost"
+      PGDATABASE: "songlist"
+      PGUSER: "postgres"
+      PGPASSWORD: "postgres" 
+    
+volumes:
+  database_data:
+    driver: local
+
